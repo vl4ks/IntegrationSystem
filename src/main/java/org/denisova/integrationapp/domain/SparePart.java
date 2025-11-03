@@ -1,0 +1,59 @@
+package org.denisova.integrationapp.domain;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "spare_parts")
+public class SparePart {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "spare_code", nullable = false, unique = true, length = 128)
+    private String spareCode;
+
+    @Column(name = "name", length = 512)
+    private String name;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "type", length = 64)
+    private String type;
+
+    @Column(name = "status", length = 64)
+    private String status;
+
+    @Column(name = "price", precision = 18, scale = 2)
+    private BigDecimal price;
+
+    @Column(name = "quantity")
+    private Integer quantity;
+
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
+
+    @Column(name = "is_active")
+    private Boolean isActive = Boolean.TRUE;
+
+    @Column(name = "last_seen_at")
+    private OffsetDateTime lastSeenAt;
+
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private OffsetDateTime createdAt;
+
+    @Column(name = "modified_at")
+    private OffsetDateTime modifiedAt;
+
+    @PreUpdate
+    void preUpdate() {
+        this.modifiedAt = OffsetDateTime.now();
+    }
+}

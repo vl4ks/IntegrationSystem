@@ -1,0 +1,32 @@
+server:
+  port: 8081
+
+app:
+  student-id: 12
+  cms:
+    base-url: http://212.237.219.35:8080
+    page-size: 10
+  report:
+    base-url: http://212.237.219.35:8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/integration
+    username: integration
+    password: integration
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc.time_zone: UTC
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
