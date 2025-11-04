@@ -21,7 +21,11 @@ public class IntegrationController {
 
     @PostMapping("/upload-report")
     public ResponseEntity<?> uploadReport(@RequestParam(name = "onlyActive", defaultValue = "true") boolean onlyActive) {
-        var result = template.requestBodyAndHeader("direct:upload-report", null, "onlyActive", onlyActive);
+        var result = template.requestBodyAndHeader(
+                "direct:upload-report",
+                null, "onlyActive",
+                Boolean.valueOf(onlyActive),
+                Object.class);
         return ResponseEntity.ok(result);
     }
 
@@ -36,10 +40,10 @@ public class IntegrationController {
             @RequestParam(name = "onlyActive", defaultValue = "true") boolean onlyActive) {
 
         String csv = template.requestBodyAndHeader(
-                "bean:csvService?method=buildCsv",
+                "bean:csvDirectService?method=buildCsvFromCms",
                 (Object) null,
                 "onlyActive",
-                onlyActive,
+                Boolean.valueOf(onlyActive),
                 String.class
         );
         return ResponseEntity.ok(csv);

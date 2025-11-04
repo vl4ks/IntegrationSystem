@@ -96,7 +96,6 @@ public class UpsertService {
 
     @Transactional
     public int deactivateMissing(OffsetDateTime seenAfter) {
-        // более эффективный вариант — UPDATE по условию + выборка изменённых
         var all = spareRepo.findAll();
         int deactivated = 0;
         for (var e : all) {

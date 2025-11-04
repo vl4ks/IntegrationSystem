@@ -1,6 +1,7 @@
 package org.denisova.integrationapp.client;
 
 import org.denisova.integrationapp.client.dto.CmsSpareDto;
+import org.denisova.integrationapp.client.dto.CmsSpareRawDto;
 import org.denisova.integrationapp.config.AppProperties;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,9 @@ import java.util.List;
 @Component
 public class CmsClient {
     private static final ParameterizedTypeReference<List<CmsSpareDto>> LIST_OF_SPARES =
+            new ParameterizedTypeReference<>() {};
+
+    private static final ParameterizedTypeReference<java.util.List<CmsSpareRawDto>> LIST_OF_RAW =
             new ParameterizedTypeReference<>() {};
 
     private final WebClient webClient;
@@ -31,6 +35,18 @@ public class CmsClient {
                 .retrieve()
                 .bodyToMono(LIST_OF_SPARES)
                 .onErrorResume(ex -> Mono.error(new RuntimeException("CMS call failed: " + ex.getMessage(), ex)))
+                .block();
+    }
+
+    public java.util.List<CmsSpareRawDto> getSparesPageRaw(int page, int size) {
+        String url = props.getCms().getBaseUrl()
+                + "/students/" + props.getStudentId()
+                + "/cms/spares?page=" + page + "&size=" + size;
+
+        return webClient.get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(LIST_OF_RAW)
                 .block();
     }
 }

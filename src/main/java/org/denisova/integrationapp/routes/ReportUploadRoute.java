@@ -9,7 +9,7 @@ public class ReportUploadRoute extends RouteBuilder {
     public void configure() {
         from("direct:upload-report")
                 .routeId("upload-report")
-                .bean("csvService", "buildCsv(${header.onlyActive})")
+                .bean("csvDirectService", "buildCsvFromCms(${header.onlyActive})")
                 .bean("reportClient", "uploadCsv");
     }
 }
