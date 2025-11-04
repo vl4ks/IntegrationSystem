@@ -30,4 +30,19 @@ public class IntegrationController {
         var result = template.requestBody("bean:reportClient?method=getResults", (Object) null);
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping(value = "/preview-csv", produces = "text/csv; charset=UTF-8")
+    public ResponseEntity<String> previewCsv(
+            @RequestParam(name = "onlyActive", defaultValue = "true") boolean onlyActive) {
+
+        String csv = template.requestBodyAndHeader(
+                "bean:csvService?method=buildCsv",
+                (Object) null,
+                "onlyActive",
+                onlyActive,
+                String.class
+        );
+        return ResponseEntity.ok(csv);
+    }
+
 }
