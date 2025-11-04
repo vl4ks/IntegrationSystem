@@ -2,7 +2,6 @@ package org.denisova.integrationapp.service;
 
 import jakarta.transaction.Transactional;
 import org.denisova.integrationapp.client.CmsClient;
-import org.denisova.integrationapp.client.dto.CmsPageResponse;
 import org.denisova.integrationapp.client.dto.CmsSpareDto;
 import org.denisova.integrationapp.config.AppProperties;
 import org.denisova.integrationapp.domain.SyncRun;
@@ -42,8 +41,7 @@ public class SyncService {
             int page = 0;
             int size = props.getCms().getPageSize();
             while (true) {
-                CmsPageResponse pageResp = cmsClient.getSparesPage(page, size);
-                List<CmsSpareDto> content = pageResp == null ? List.of() : pageResp.getContent();
+                List<CmsSpareDto> content = cmsClient.getSparesPage(page, size);
                 if (content == null || content.isEmpty()) break;
 
                 total += content.size();

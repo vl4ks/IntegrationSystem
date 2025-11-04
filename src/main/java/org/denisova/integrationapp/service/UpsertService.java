@@ -9,6 +9,7 @@ import org.denisova.integrationapp.repo.SparePartVersionRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
 
 @Service
@@ -52,7 +53,7 @@ public class UpsertService {
         e.setStatus(d.getSpareStatus());
         e.setPrice(d.getPrice());
         e.setQuantity(d.getQuantity());
-        e.setUpdatedAt(d.getUpdatedAt());
+        e.setUpdatedAt(d.getUpdatedAt() == null ? null : d.getUpdatedAt().atOffset(ZoneOffset.UTC));
         e.setIsActive(true);
         return e;
     }
@@ -65,7 +66,9 @@ public class UpsertService {
         changed |= setIfDiff(() -> e.getStatus(),     v -> e.setStatus(v), d.getSpareStatus());
         changed |= setIfDiff(() -> e.getPrice(),      v -> e.setPrice(v), d.getPrice());
         changed |= setIfDiff(() -> e.getQuantity(),   v -> e.setQuantity(v), d.getQuantity());
-        changed |= setIfDiff(() -> e.getUpdatedAt(),  v -> e.setUpdatedAt(v), d.getUpdatedAt());
+        changed |= setIfDiff(() -> e.getUpdatedAt(),
+                v -> e.setUpdatedAt(v),
+                d.getUpdatedAt() == null ? null : d.getUpdatedAt().atOffset(ZoneOffset.UTC));
         if (Boolean.FALSE.equals(e.getIsActive())) { e.setIsActive(true); changed = true; }
         return changed;
     }
@@ -86,7 +89,7 @@ public class UpsertService {
         v.setStatus(d.getSpareStatus());
         v.setPrice(d.getPrice());
         v.setQuantity(d.getQuantity());
-        v.setUpdatedAt(d.getUpdatedAt());
+        v.setUpdatedAt(d.getUpdatedAt() == null ? null : d.getUpdatedAt().atOffset(ZoneOffset.UTC));
         v.setChangeKind(kind);
         return v;
     }

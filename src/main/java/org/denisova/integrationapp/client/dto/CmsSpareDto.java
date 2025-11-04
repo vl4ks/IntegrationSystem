@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -16,5 +16,5 @@ public class CmsSpareDto {
     private String spareStatus;
     private BigDecimal price;
     private Integer quantity;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
 }
