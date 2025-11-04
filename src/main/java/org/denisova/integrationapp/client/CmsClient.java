@@ -10,6 +10,10 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+/**
+ * Клиент для обращения к CMS API.
+ * Выполняет GET-запросы (с пагинацией) и возвращает список деталей.
+ */
 @Component
 public class CmsClient {
     private static final ParameterizedTypeReference<List<CmsSpareDto>> LIST_OF_SPARES =
@@ -26,6 +30,10 @@ public class CmsClient {
         this.props = props;
     }
 
+    /**
+     * Загружает одну страницу деталей из CMS.
+     * API возвращает корневой JSON-массив.
+     */
     public List<CmsSpareDto> getSparesPage(int page, int size) {
         String url = props.getCms().getBaseUrl()
                 + "/students/" + props.getStudentId()
@@ -38,6 +46,9 @@ public class CmsClient {
                 .block();
     }
 
+    /**
+     * Загружает «сырые» данные (все поля строки) для построения точного CSV.
+     */
     public java.util.List<CmsSpareRawDto> getSparesPageRaw(int page, int size) {
         String url = props.getCms().getBaseUrl()
                 + "/students/" + props.getStudentId()

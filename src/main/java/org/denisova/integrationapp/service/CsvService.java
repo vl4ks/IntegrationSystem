@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Сервис для генерации CSV из данных БД.
+ * Используется при отладке и анализе локальных данных.
+ */
 @Service
 public class CsvService {
     private final SparePartRepository spareRepo;
@@ -16,6 +20,10 @@ public class CsvService {
         this.spareRepo = spareRepo;
     }
 
+    /**
+     * Формирует CSV по записям в таблице spare_parts.
+     * Может фильтровать только активные записи.
+     */
     public String buildCsv(@Header("onlyActive") boolean onlyActive) {
         var items = spareRepo.findAll();
         var sb = new StringBuilder(4096);

@@ -6,6 +6,10 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * Нормализованный DTO из CMS для апсёрта.
+ * Используется для записи в БД.
+ */
 @Getter
 @Setter
 public class CmsSpareDto {

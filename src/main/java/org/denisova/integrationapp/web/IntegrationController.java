@@ -4,6 +4,10 @@ import org.apache.camel.ProducerTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * REST-контроллер для управления интеграцией.
+ * Позволяет запускать синхронизацию, выгрузку отчёта и предварительный просмотр CSV.
+ */
 @RestController
 @RequestMapping("/integration")
 public class IntegrationController {
@@ -13,12 +17,18 @@ public class IntegrationController {
         this.template = template;
     }
 
+    /**
+     * Запускает процесс синхронизации данных CMS → БД.
+     */
     @PostMapping("/run-sync")
     public ResponseEntity<?> runSync() {
         var result = template.requestBody("direct:sync-cms", (Object) null);
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * Формирует CSV и отправляет в проверяющую систему.
+     */
     @PostMapping("/upload-report")
     public ResponseEntity<?> uploadReport(@RequestParam(name = "onlyActive", defaultValue = "true") boolean onlyActive) {
         var result = template.requestBodyAndHeader(
@@ -35,6 +45,9 @@ public class IntegrationController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * Возвращает CSV как текст для предварительного просмотра.
+     */
     @GetMapping(value = "/preview-csv", produces = "text/csv; charset=UTF-8")
     public ResponseEntity<String> previewCsv(
             @RequestParam(name = "onlyActive", defaultValue = "true") boolean onlyActive) {

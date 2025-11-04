@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+/**
+ * Основной сервис синхронизации с CMS.
+ * Загружает данные постранично, выполняет upsert и ведёт журнал запусков.
+ */
 @Service
 public class SyncService {
     private final CmsClient cmsClient;
@@ -26,6 +30,10 @@ public class SyncService {
         this.props = props;
     }
 
+    /**
+     * Запускает полную синхронизацию деталей с CMS.
+     * Выполняет обновление/вставку и деактивацию отсутствующих позиций.
+     */
     @Transactional
     public SyncRun syncAll() {
         var run = new SyncRun();

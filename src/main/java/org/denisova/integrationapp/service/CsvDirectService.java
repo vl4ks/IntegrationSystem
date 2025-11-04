@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Сервис для построения CSV напрямую из CMS.
+ * Используется при выгрузке отчёта, чтобы сохранить исходный формат данных.
+ */
 @Service
 public class CsvDirectService {
     private final CmsClient cmsClient;

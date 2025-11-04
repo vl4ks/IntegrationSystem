@@ -12,6 +12,12 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
 
+/**
+ * Сервис апсёрта данных из CMS в БД.
+ * - Создаёт новые записи (CREATED)
+ * - Обновляет изменившиеся поля (UPDATED)
+ * - Деактивирует записи, которых не было в текущем прогоне (DEACTIVATED)
+ */
 @Service
 public class UpsertService {
     private final SparePartRepository spareRepo;
@@ -22,6 +28,13 @@ public class UpsertService {
         this.versionRepo = versionRepo;
     }
 
+    /**
+     * Апсёрт одной детали из CMS.
+     * @param dto данные из CMS
+     * @param syncStartedAt метка запуска синка (для lastSeenAt)
+     * @param counters счётчики вставок/обновлений
+     * @return true, если запись была создана или изменена
+     */
     @Transactional
     public boolean upsertFromCms(CmsSpareDto dto, OffsetDateTime syncStartedAt, Counters counters) {
         var existing = spareRepo.findBySpareCode(dto.getSpareCode()).orElse(null);
@@ -44,6 +57,9 @@ public class UpsertService {
         }
     }
 
+    /**
+     * Маппинг новой сущности из DTO CMS (c нормализацией времени в UTC).
+     */
     private SparePart mapNew(CmsSpareDto d) {
         var e = new SparePart();
         e.setSpareCode(d.getSpareCode());
@@ -58,6 +74,10 @@ public class UpsertService {
         return e;
     }
 
+    /**
+     * Применяет изменения по полям; возвращает true, если что-то изменилось.
+     * Также ре-активирует запись, если она была деактивирована.
+     */
     private boolean applyChanges(SparePart e, CmsSpareDto d) {
         boolean changed = false;
         changed |= setIfDiff(() -> e.getName(),       v -> e.setName(v), d.getSpareName());
@@ -73,6 +93,9 @@ public class UpsertService {
         return changed;
     }
 
+    /**
+     * Утилита: проставляет значение, если оно реально изменилось.
+     */
     private <T> boolean setIfDiff(java.util.function.Supplier<T> getter,
                                   java.util.function.Consumer<T> setter, T newVal) {
         T oldVal = getter.get();
@@ -80,6 +103,9 @@ public class UpsertService {
         return false;
     }
 
+    /**
+     * Создаёт версионную запись по данным CMS.
+     */
     private SparePartVersion mapVersion(CmsSpareDto d, String kind) {
         var v = new SparePartVersion();
         v.setSpareCode(d.getSpareCode());
@@ -94,6 +120,11 @@ public class UpsertService {
         return v;
     }
 
+    /**
+     * Деактивирует записи, которые не встретились в текущем прогоне.
+     * @param seenAfter метка начала синка; всё, что не было замечено после неё, деактивируется
+     * @return кол-во деактивированных записей
+     */
     @Transactional
     public int deactivateMissing(OffsetDateTime seenAfter) {
         var all = spareRepo.findAll();
@@ -121,6 +152,9 @@ public class UpsertService {
         return deactivated;
     }
 
+    /**
+     * Счётчики статистики апсёрта за один прогон.
+     */
     public static class Counters {
         public int inserted = 0;
         public int updated = 0;

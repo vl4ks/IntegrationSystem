@@ -7,6 +7,9 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
+/**
+ * Версионная запись по детали: фиксирует состояние и тип изменения в момент времени.
+ */
 @Getter
 @Setter
 @Entity
@@ -37,12 +40,15 @@ public class SparePartVersion {
     @Column(name = "quantity")
     private Integer quantity;
 
+    /** Метка обновления из источника (CMS). */
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
+    /** Время фиксации версии в хранилище. */
     @Column(name = "version_created_at", insertable = false, updatable = false)
     private OffsetDateTime versionCreatedAt;
 
+    /** Тип изменения: CREATED | UPDATED | DEACTIVATED. */
     @Column(name = "change_kind", length = 16)
-    private String changeKind; // CREATED | UPDATED | DEACTIVATED
+    private String changeKind;
 }

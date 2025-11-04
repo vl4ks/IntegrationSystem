@@ -7,6 +7,10 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
+/**
+ * Текущее состояние детали в системе.
+ * Поля соответствуют бизнес-сущности, актуальные на последний синк.
+ */
 @Getter
 @Setter
 @Entity
@@ -37,12 +41,15 @@ public class SparePart {
     @Column(name = "quantity")
     private Integer quantity;
 
+    /** Метка последнего обновления из CMS (UTC). */
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
+    /** Флаг актуальности записи (деактивация — если деталь исчезла из CMS). */
     @Column(name = "is_active")
     private Boolean isActive = Boolean.TRUE;
 
+    /** Когда эта запись в последний раз была замечена текущим синком. */
     @Column(name = "last_seen_at")
     private OffsetDateTime lastSeenAt;
 
