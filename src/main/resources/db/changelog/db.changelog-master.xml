@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <!--
+        Автор: denisova
+        Дата: 2025-11-04
+        Назначение: Главный changelog Liquibase,
+        который подключает остальные .sql файлы с изменениями.
+    -->
+
+    <include
+            file="db/changelog/changes/001-init-tables.sql"
+            relativeToChangelogFile="false"/>
+
+</databaseChangeLog>
