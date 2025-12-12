@@ -30,12 +30,8 @@ public class IntegrationController {
      * Формирует CSV и отправляет в проверяющую систему.
      */
     @PostMapping("/upload-report")
-    public ResponseEntity<?> uploadReport(@RequestParam(name = "onlyActive", defaultValue = "true") boolean onlyActive) {
-        var result = template.requestBodyAndHeader(
-                "direct:upload-report",
-                null, "onlyActive",
-                Boolean.valueOf(onlyActive),
-                Object.class);
+    public ResponseEntity<?> uploadReport() {
+        var result = template.requestBody("direct:upload-report", (Object) null);
         return ResponseEntity.ok(result);
     }
 
@@ -49,14 +45,11 @@ public class IntegrationController {
      * Возвращает CSV как текст для предварительного просмотра.
      */
     @GetMapping(value = "/preview-csv", produces = "text/csv; charset=UTF-8")
-    public ResponseEntity<String> previewCsv(
-            @RequestParam(name = "onlyActive", defaultValue = "true") boolean onlyActive) {
+    public ResponseEntity<String> previewCsv() {
 
-        String csv = template.requestBodyAndHeader(
-                "bean:csvDirectService?method=buildCsvFromCms",
+        String csv = template.requestBody(
+                "bean:csvService?method=buildCsv",
                 (Object) null,
-                "onlyActive",
-                Boolean.valueOf(onlyActive),
                 String.class
         );
         return ResponseEntity.ok(csv);

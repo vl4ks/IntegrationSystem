@@ -3,8 +3,6 @@ package org.denisova.integrationapp.client.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * Нормализованный DTO из CMS для апсёрта.
@@ -18,7 +16,7 @@ public class CmsSpareDto {
     private String spareDescription;
     private String spareType;
     private String spareStatus;
-    private BigDecimal price;
+    private Integer price;
     private Integer quantity;
-    private LocalDateTime updatedAt;
+    private String updatedAt;
 }

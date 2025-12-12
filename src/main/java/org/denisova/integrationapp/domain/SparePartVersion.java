@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 /**
@@ -34,15 +33,15 @@ public class SparePartVersion {
     @Column(name = "status", length = 64)
     private String status;
 
-    @Column(name = "price", precision = 18, scale = 2)
-    private BigDecimal price;
+    @Column(name = "price")
+    private Integer price;
 
     @Column(name = "quantity")
     private Integer quantity;
 
     /** Метка обновления из источника (CMS). */
     @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
+    private String updatedAt;
 
     /** Время фиксации версии в хранилище. */
     @Column(name = "version_created_at", insertable = false, updatable = false)

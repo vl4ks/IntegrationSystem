@@ -59,9 +59,9 @@ Spring Boot-приложение для интеграции с учебной C
 ## 🧾 Формирование отчёта
 
 1. **REST-запрос**:  
-   `POST /integration/upload-report?onlyActive=true` → маршрут `direct:upload-report`
+   `POST /integration/upload-report` → маршрут `direct:upload-report`
 
-2. **CsvDirectService** собирает CSV напрямую из CMS, строго соблюдая заданный формат.
+2. **CsvService** собирает CSV.
 
 3. **ReportClient** отправляет CSV в систему проверки.
 

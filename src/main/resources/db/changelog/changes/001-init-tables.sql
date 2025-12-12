@@ -10,9 +10,9 @@ create table spare_parts (
                              description      text                      null,
                              type             varchar(64)               null,
                              status           varchar(64)               null,
-                             price            numeric(18,2)             null,
+                             price            int                       null,
                              quantity         int                       null,
-                             updated_at       timestamptz               null,
+                             updated_at       text                      null,
                              is_active        boolean                   not null default true,
                              last_seen_at     timestamptz               null,
 
@@ -32,9 +32,9 @@ create table spare_part_versions (
                                      description         text                  null,
                                      type                varchar(64)           null,
                                      status              varchar(64)           null,
-                                     price               numeric(18,2)         null,
+                                     price               int                   null,
                                      quantity            int                   null,
-                                     updated_at          timestamptz           null,
+                                     updated_at          text                  null,
                                      version_created_at  timestamptz           not null default now(),
                                      change_kind         varchar(16)           null,  -- CREATED | UPDATED | DEACTIVATED
 

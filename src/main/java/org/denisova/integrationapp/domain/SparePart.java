@@ -3,9 +3,8 @@ package org.denisova.integrationapp.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+
 
 /**
  * Текущее состояние детали в системе.
@@ -35,15 +34,15 @@ public class SparePart {
     @Column(name = "status", length = 64)
     private String status;
 
-    @Column(name = "price", precision = 18, scale = 2)
-    private BigDecimal price;
+    @Column(name = "price")
+    private Integer price;
 
     @Column(name = "quantity")
     private Integer quantity;
 
-    /** Метка последнего обновления из CMS (UTC). */
+    /** Метка последнего обновления из CMS (строка в исходном формате). */
     @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
+    private String updatedAt;
 
     /** Флаг актуальности записи (деактивация — если деталь исчезла из CMS). */
     @Column(name = "is_active")
