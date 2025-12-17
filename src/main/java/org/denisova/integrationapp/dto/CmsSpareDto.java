@@ -1,4 +1,4 @@
-package org.denisova.integrationapp.client.dto;
+package org.denisova.integrationapp.dto;
 
 import lombok.Getter;
 import lombok.Setter;
