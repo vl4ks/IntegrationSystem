@@ -1,72 +1,41 @@
-# 🔄 Integration App (CMS → Report System)
+# Integration App (CMS → Report)
 
-Spring Boot-приложение для интеграции с учебной CMS и проверяющей системой.  
-Реализует синхронизацию данных о запасных частях (spare parts), их хранение в БД и формирование CSV-отчёта в требуемом формате.
-
----
-
-## ⚙️ Технологии
-
-| Компонент | Используется |
-|------------|--------------|
-| Язык | Java 21 |
-| Framework | Spring Boot 3 + Apache Camel |
-| ORM | Spring Data JPA / Hibernate |
-| Миграции | Liquibase (SQL-скрипты) |
-| База данных | PostgreSQL |
-| Клиенты | WebClient (CMS + Report API) |
-| Формат обмена | JSON (CMS), CSV (Report) |
-| Build Tool | Maven |
+Spring Boot + Apache Camel приложение, которое:
+- периодически тянет данные о запчастях из CMS и складывает в бд;
+- ведет историю изменений;
+- формирует CSV-отчет и отправляет его в проверяющую систему.
 
 ---
 
-## 🌐 REST-эндпоинты
-
-| Метод | URL                                                | Назначение                                      |
-|-------|----------------------------------------------------|-------------------------------------------------|
-| POST  | `/integration/run-sync`                            | Запустить синхронизацию данных CMS → БД         |
-| POST  | `/integration/upload-report?onlyActive=true`       | Сформировать и отправить CSV-отчёт              |
-| GET   | `/integration/preview-csv?onlyActive=true`         | Предпросмотр CSV перед выгрузкой                |
-| GET   | `/integration/results`                             | Получить результат проверки CSV                 |
+## Технологии
+- Java 17, Spring Boot 3.2
+- Apache Camel 4.4 (routes: timer/http/sql/file/jackson/csv/log/direct)
+- БД: PostgreSQL
 
 ---
 
-## 📊 Таблицы
-
-| Таблица                | Назначение                              |
-|------------------------|-----------------------------------------|
-| `spare_parts`          | Текущее состояние деталей               |
-| `spare_part_versions`  | История изменений каждой детали         |
-| `sync_run`             | Журнал запусков синхронизации           |
-
----
-
-## 🔁 Процесс синхронизации
-
-1. **REST-запрос**:  
-   `POST /integration/run-sync` → маршрут `direct:sync-cms`
-
-2. **SyncService** вызывает **CmsClient** → загружает данные из CMS постранично.
-
-3. **UpsertService** обновляет или вставляет записи в таблицу `spare_parts`.
-
-4. Все изменения фиксируются в таблице `spare_part_versions`.
-
-5. После завершения синхронизации формируется статистика и сохраняется в `sync_run`.
+## Основные маршруты
+- `CmsSyncRoute` (timer 5 мин): GET CMS `/students/{id}/cms/spares?page=&size=` → upsert в `spare_parts`, запись версии в `spare_part_versions`, журнал `sync_run`, деактивация отсутствующих записей.
+- `SpareProcessingRoute`: insert/update `spare_parts`, добавляет запись в `spare_part_versions`, собирает статистику.
+- `DeactivationRoute`: помечает не пришедшие в текущем синке как неактивные и пишет версию с `change_kind=DEACTIVATED`.
+- `StatsRoute`/`SyncRunUpdateRoute`: агрегируют counters и проставляют `finished_at`/`status` в `sync_run`.
+- `ReportGenerationRoute` (timer 1 час): берет данные из таблицы `spare_parts`, генерирует CSV, отправляет в Report API и сохраняет ответ в `reports/responses`.
 
 ---
 
-## 🧾 Формирование отчёта
+## Схема данных
+- `spare_parts`: spare_code, name, description, type, status, price, quantity, updated_at, is_active, last_seen_at, created_at, modified_at.
+- `spare_part_versions`: история изменений, поле `change_kind` (CREATED/UPDATED/DEACTIVATED).
+- `sync_run`: журнал запусков синхронизации и статистика.
 
-1. **REST-запрос**:  
-   `POST /integration/upload-report` → маршрут `direct:upload-report`
+---
 
-2. **CsvService** собирает CSV.
-
-3. **ReportClient** отправляет CSV в систему проверки.
-
-4. Результат можно получить через:  
-   `GET /integration/results`
+## Конфигурация
+`src/main/resources/application.properties`:
+- `spring.datasource.*` — подключение к Postgres.
+- `camel.component.sql.data-source=#dataSource` — Camel SQL использует бин DataSource.
+- `app.cms.base-url`, `app.report.base-url`, `app.cms.page-size`, `app.student-id`.
+- Таймеры: `camel.route.cms-sync.period` (5 мин), `camel.route.report-gen.period` (1 ч).
 
 ---
 
@@ -74,8 +43,4 @@ Spring Boot-приложение для интеграции с учебной C
 
 ```csv
 SPARE-1;Spare Part 1;Description for spare part 1;CLUTCH;DAMAGED;11;46;2025-10-07T15:25:34.861286586
-```
-## Формат CSV-строки
-```csv
-spareCode;spareName;spareDescription;spareType;spareStatus;price;quantity;updatedAt
 ```
